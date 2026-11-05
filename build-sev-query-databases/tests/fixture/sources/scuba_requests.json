@@ -1,0 +1,28 @@
+{
+  "sev_id": "S_FIXTURE_001",
+  "tool": "scuba",
+  "query_id": "request_errors",
+  "resource_name": "service_requests",
+  "query": "group request outcomes by minute",
+  "classification": "causal",
+  "classification_reason": "Preserves the incident error-rate transition.",
+  "time_range": {
+    "baseline_start": "2026-10-20T11:30:00Z",
+    "incident_start": "2026-10-20T12:00:00Z",
+    "recovery_end": "2026-10-20T12:25:00Z",
+    "cutoff": "2026-10-20T12:30:00Z"
+  },
+  "supported_functions": ["count", "group_by", "filter"],
+  "columns": [
+    {"name": "timestamp", "type": "timestamp"},
+    {"name": "service_id", "type": "string"},
+    {"name": "status", "type": "string"},
+    {"name": "count", "type": "integer"}
+  ],
+  "rows": [
+    {"timestamp": "2026-10-20T11:45:00Z", "service_id": "prod_service_42", "status": "ok", "count": 100},
+    {"timestamp": "2026-10-20T12:05:00Z", "service_id": "prod_service_42", "status": "error", "count": 91},
+    {"timestamp": "2026-10-20T12:20:00Z", "service_id": "prod_service_42", "status": "ok", "count": 98}
+  ],
+  "invariants": ["incident error count exceeds baseline", "recovery returns to ok"]
+}

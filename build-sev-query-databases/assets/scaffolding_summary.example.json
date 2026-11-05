@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1",
+  "sev_id": "S707352",
+  "status": "not_materialized",
+  "selected_trajectories": [],
+  "included_tools": [],
+  "database": null,
+  "adapters": [],
+  "validation": {
+    "status": "not_run",
+    "checks": []
+  },
+  "known_gaps": [],
+  "handoff_files": []
+}

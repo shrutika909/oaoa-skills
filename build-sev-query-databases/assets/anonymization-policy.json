@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "strategy": "synthetic_reconstruction",
+  "fail_on_unknown_sensitive_fields": true,
+  "allowed_sources": ["scuba", "daiquery", "hive", "presto", "logview"],
+  "forbidden_output_patterns": [
+    "internalfb\\.com",
+    "fburl\\.com",
+    "\\bS[0-9]{5,}\\b",
+    "\\bOM[0-9]{5,}\\b",
+    "\\bD[0-9]{5,}\\b",
+    "m8-api-",
+    "device_serial",
+    "production_",
+    "prod_"
+  ],
+  "validation": {
+    "scan_identity": true,
+    "scan_credentials": true,
+    "scan_internal_identifiers": true,
+    "scan_all_output_artifacts": true,
+    "test_technical_fidelity": true,
+    "require_human_approval": false
+  }
+}

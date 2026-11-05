@@ -1,0 +1,15 @@
+{
+  "sev_id": "S_FIXTURE_001",
+  "tool": "logview",
+  "operation": "sample_metadata_read",
+  "query_id": "sample_private_metadata",
+  "resource_name": "synthetic_crash_context",
+  "context": "synthetic_crash_context",
+  "classification": "excluded",
+  "classification_reason": "Sensitive values were not approved for agent-visible replay.",
+  "privacy": {"values_approved": false, "included_keys": ["device_serial_number"]},
+  "columns": [{"name": "device_serial_number", "type": "string"}],
+  "rows": [{"device_serial_number": "must-not-ship"}],
+  "time_range": {"cutoff": 1782147600},
+  "invariants": ["unapproved values never enter SQLite"]
+}

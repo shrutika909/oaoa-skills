@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "task_id": "S_SYNTHETIC_001",
+  "datasets": [
+    {
+      "source_type": "scuba",
+      "operation": "query",
+      "query_id": "fictional_event_window",
+      "resource_name": "fictional_event_stream",
+      "classification": "causal",
+      "row_count": 4,
+      "ordered_by": "event_time",
+      "supported_functions": ["filter", "group_by", "count"],
+      "columns": [
+        {"name": "event_time", "type": "timestamp", "generator": {"kind": "timestamp_series", "start": 2000000000, "step_seconds": 60}},
+        {"name": "worker_id", "type": "string", "generator": {"kind": "sequence_id", "pool": "workers", "prefix": "worker"}},
+        {"name": "result", "type": "string", "generator": {"kind": "enum_cycle", "values": ["ok", "ok", "timeout", "retry_exhausted"]}},
+        {"name": "latency_ms", "type": "integer", "generator": {"kind": "integer_series", "start": 10, "step": 15}}
+      ],
+      "invariants": ["timeouts appear before retry exhaustion"]
+    },
+    {
+      "source_type": "scuba",
+      "source_lineage_id": "scuba_lineage_sessions",
+      "operation": "query",
+      "query_id": "fictional_session_mutations",
+      "resource_name": "fictional_session_mutation_stream",
+      "classification": "supporting",
+      "row_count": 4,
+      "ordered_by": "event_time",
+      "supported_functions": ["filter", "group_by", "count"],
+      "columns": [
+        {"name": "event_time", "type": "timestamp", "generator": {"kind": "timestamp_series", "start": 2000000000, "step_seconds": 60}},
+        {"name": "worker_id", "type": "string", "generator": {"kind": "foreign_key", "pool": "workers"}},
+        {"name": "mutation", "type": "string", "generator": {"kind": "enum_cycle", "values": ["lookup", "create", "collision", "reconcile"]}},
+        {"name": "generation", "type": "string", "generator": {"kind": "enum_cycle", "values": ["alias_v2", "canonical_v3"]}}
+      ],
+      "invariants": ["session mutation telemetry remains distinct from evaluation telemetry"]
+    },
+    {
+      "source_type": "hive",
+      "operation": "query",
+      "query_id": "fictional_partitioned_jobs",
+      "resource_name": "fictional_job_warehouse",
+      "classification": "directional",
+      "row_count": 4,
+      "supported_functions": ["select", "join", "partition_filter"],
+      "columns": [
+        {"name": "worker_id", "type": "string", "generator": {"kind": "foreign_key", "pool": "workers"}},
+        {"name": "event_date", "type": "string", "generator": {"kind": "enum_cycle", "values": ["2033-05-18", "2033-05-19"]}},
+        {"name": "region", "type": "string", "generator": {"kind": "enum_cycle", "values": ["north", "south"]}}
+      ],
+      "invariants": ["worker IDs join to the event stream", "two fictional partitions exist"]
+    },
+    {
+      "source_type": "daiquery",
+      "operation": "query",
+      "query_id": "fictional_orders",
+      "resource_name": "fictional_relational_store",
+      "classification": "competing",
+      "row_count": 4,
+      "supported_functions": ["select", "join", "transaction"],
+      "columns": [
+        {"name": "order_id", "type": "string", "generator": {"kind": "sequence_id", "pool": "orders", "prefix": "order"}},
+        {"name": "worker_id", "type": "string", "generator": {"kind": "foreign_key", "pool": "workers"}},
+        {"name": "state", "type": "string", "generator": {"kind": "enum_cycle", "values": ["created", "committed"]}}
+      ],
+      "invariants": ["order IDs are unique", "worker foreign keys resolve"]
+    },
+    {
+      "source_type": "presto",
+      "operation": "query",
+      "query_id": "fictional_dependency_summary",
+      "resource_name": "fictional_dependency_events",
+      "classification": "negative",
+      "row_count": 4,
+      "ordered_by": "event_time",
+      "supported_functions": ["select", "filter", "join", "group_by", "order_by"],
+      "columns": [
+        {"name": "event_time", "type": "timestamp", "generator": {"kind": "timestamp_series", "start": 2000000000, "step_seconds": 5}},
+        {"name": "worker_id", "type": "string", "generator": {"kind": "foreign_key", "pool": "workers"}},
+        {"name": "dependency_stage", "type": "string", "generator": {"kind": "enum_cycle", "values": ["parse", "enrich", "transform", "publish"]}},
+        {"name": "duration_ms", "type": "integer", "generator": {"kind": "integer_series", "start": 10, "step": 15}},
+        {"name": "result", "type": "string", "generator": {"kind": "enum_cycle", "values": ["ok", "ok", "memory_pressure", "ok"]}}
+      ],
+      "invariants": ["worker foreign keys resolve", "transform stage retains the anomalous result"]
+    },
+    {
+      "source_type": "logview",
+      "operation": "mid_trend",
+      "query_id": "fictional_failure_chain",
+      "resource_name": "fictional_log_context",
+      "classification": "causal",
+      "context": "fictional_log_context",
+      "row_count": 3,
+      "ordered_by": "event_time",
+      "supported_functions": ["trend", "filter_by_mid", "time_window"],
+      "privacy": {"values_approved": true, "included_keys": []},
+      "columns": [
+        {"name": "event_time", "type": "timestamp", "generator": {"kind": "timestamp_series", "start": 2000000000, "step_seconds": 5}},
+        {"name": "mid", "type": "string", "generator": {"kind": "constant", "value": "identity_000001"}},
+        {"name": "event", "type": "string", "generator": {"kind": "enum_cycle", "values": ["request_timeout", "retry_started", "retry_exhausted"]}},
+        {"name": "frame", "type": "string", "generator": {"kind": "template", "value": "fictional.module_{index}"}}
+      ],
+      "invariants": ["timeout precedes retry and exhaustion"]
+    }
+  ]
+}

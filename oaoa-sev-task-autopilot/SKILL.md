@@ -125,6 +125,22 @@ and `docs/reference/sev_to_synthetic_task_playbook.md`. For a Logview source, re
 supplied Logview task plan when one exists and current Logview/Opsmate investigation
 instructions. A source plan is helpful but not required.
 
+Source locations (already out there — clone, do not copy into this repo):
+- `.agents/skills/sev-investigation-task/SKILL.md` and
+  `.agents/skills/sev-to-codimango-task/SKILL.md` (with all `references/` and
+  `scripts/`) in the `codimango/oaoa-tbench` repo (same origin as task checkouts).
+- `docs/reference/sev_to_synthetic_task_playbook.md` in the `codimango/oaoa-tbench`
+  repo (also present in task checkouts).
+- `team-aai:swebench-flow` and `create-trial-sandbox` from the installed `team-aai`
+  plugin (sources in fbsource at
+  `fbcode/claude-templates/components/plugins/team-aai/skills/`).
+- `review-task-tbench-v2` from the `team-aai` plugin install; canonical sources live
+  under `team-aai-dev` / `team-aai/quality` in fbsource, so confirm which revision
+  your install carries before pushing.
+- UNRESOLVED: `k3-instruction-rewrite-loop` has no locatable source in fbsource or
+  the oaoa-tbench repo — resolve its location before relying on the provenance
+  rewrite gate on a fresh machine.
+
 SEV-only eligibility and metadata rules remain authoritative for `source_kind: sev`
 only. For `logview-health-incident`, inability to verify the accepted non-SEV origin
 marker blocks commit, push, and submission, but does not block safe local research,
@@ -141,11 +157,13 @@ instruction authorship. It does not weaken the repository skill's gates.
 2. Fetch the latest `codimango/oaoa-tbench` state. Work in a dedicated clean worktree;
    never use a checkout containing another session's changes.
 3. Read the supplied candidate sheet and the canonical cross-author registry. Consider
-   only resolved sources not already used or reserved by Shrutika Naik, Akash Jothi, or
-   any other author. Dedupe by the canonical stable source key before loading incident
+   only resolved sources not already used or reserved by another author — replace the
+   two hardcoded author names below with the current author list from the registry
+   before selecting. Dedupe by the canonical stable source key before loading incident
    details: SEV number for `sev`, or Logview context plus MID for
    `logview-health-incident`. Then run semantic dedupe across active, draft, retired,
-   rejected, and cross-repository tasks.
+   rejected, and cross-repository tasks. Default registry owners at time of writing:
+   Shrutika Naik, Akash Jothi.
 4. During pre-selection, reject unsuitable sheet rows and continue to the next row when
    candidate selection was authorized. Once one source is selected and research begins,
    never substitute another without explicit confirmation. Pick the candidate only after
@@ -156,7 +174,8 @@ instruction authorship. It does not weaken the repository skill's gates.
    another candidate only when candidate selection was explicitly authorized. Never
    splice incidents merely to raise difficulty.
 5. Before design, perform a bounded read-only audit of the latest available full-SHA Codimango
-   full-task/deep reviews for current OAOA drafts owned by Shrutika and Akash. Extract
+   full-task/deep reviews for current OAOA drafts owned by the registry's active
+   authors. Extract
    generalized lessons by category: fairness/observability, verifier correctness,
    leakage, novelty, provenance, calibration, metadata, and infrastructure. Never copy
    task text, hidden answers, reviewer-only gold, or task-specific fixes into the new task.
@@ -433,8 +452,8 @@ The helper currently contains a retired artifact-download call. Predownload arti
 then use its supported API:
 
 ```bash
-H=$(find ~/.claude/agent-market/plugins -path '*/team-aai/skills/create-trial-sandbox/helpers/trial_sandbox.py' 2>/dev/null | head -n 1)
-[ -n "$H" ] || { echo "trial_sandbox.py not found under ~/.claude/agent-market/plugins (team-aai plugin required)" >&2; exit 1; }
+H=$(find ~/.claude/agent-market/plugins ~/.codex/agent-market/plugins -path '*/team-aai/skills/create-trial-sandbox/helpers/trial_sandbox.py' 2>/dev/null | head -n 1)
+[ -n "$H" ] || { echo "trial_sandbox.py not found under agent-market plugins (team-aai plugin required)" >&2; exit 1; }
 S="$AUTHOR_ONLY_DIR/trial-sandboxes/<trial-id>"
 mkdir -p "$S/artifacts"
 codimango trial artifacts <trial-id> --download "$S/artifacts"

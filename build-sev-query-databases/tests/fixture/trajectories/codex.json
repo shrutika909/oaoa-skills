@@ -1,0 +1,26 @@
+{
+  "session_id": "fixture-codex-trajectory",
+  "agent": "CODEX",
+  "cutoff": "2026-10-20T12:30:00Z",
+  "steps": [
+    {
+      "timestamp": "2026-10-20T12:11:00Z",
+      "name": "mcp__data__scuba",
+      "arguments": {"dataset": "service_requests"},
+      "status": "success"
+    },
+    {
+      "timestamp": "2026-10-20T12:12:00Z",
+      "name": "hive.query",
+      "arguments": {"table": "deployments"},
+      "status": "failed"
+    },
+    {
+      "timestamp": "2026-10-20T12:13:00Z",
+      "name": "meta.logview.mid.list",
+      "operation": "mid_list",
+      "arguments": {"context": "synthetic_crash_context"},
+      "status": "success"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": "0.1",
+  "sev_id": "S707352",
+  "status": "discovery_complete",
+  "phase_timings": [],
+  "trajectories": [],
+  "sources_used": [],
+  "sources_skipped": [],
+  "targeted_queries": [],
+  "hidden_evidence": [],
+  "included_components": [],
+  "transformations": [],
+  "table_measurements": [],
+  "exclusions": [],
+  "coverage_gaps": [],
+  "provenance": [],
+  "source_inventory_sha256": "<sha256>"
+}

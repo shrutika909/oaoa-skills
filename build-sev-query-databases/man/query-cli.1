@@ -1,0 +1,11 @@
+.TH QUERY-CLI 1
+.SH NAME
+query-cli \- query a bounded offline SEV evidence snapshot
+.SH SYNOPSIS
+.B query-cli resources --tool TOOL
+.br
+.B query-cli query --tool TOOL --query-id ID [--limit N]
+.SH DESCRIPTION
+Lists approved resources or executes a declared read-only query against the replay service. Raw SQL and direct snapshot access are unsupported.
+.SH ERRORS
+Malformed requests, denied or missing resources, unsupported operations, limits, and infrastructure failures return non-success responses without revealing hidden resources.

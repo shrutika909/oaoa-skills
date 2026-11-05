@@ -1,0 +1,20 @@
+{
+  "sev_id": "S_FIXTURE_001",
+  "tool": "hive",
+  "query_id": "deployment_timeline",
+  "resource_name": "deployments",
+  "query": "select bounded deployment timeline",
+  "classification": "directional",
+  "classification_reason": "Allows the investigator to test and discount a deployment hypothesis.",
+  "time_range": {"cutoff": "2026-10-20T12:30:00Z"},
+  "supported_functions": ["select", "filter", "order_by"],
+  "columns": [
+    {"name": "timestamp", "type": "timestamp"},
+    {"name": "deployment_id", "type": "string"},
+    {"name": "result", "type": "string"}
+  ],
+  "rows": [
+    {"timestamp": "2026-10-20T10:00:00Z", "deployment_id": "D123", "result": "success"}
+  ],
+  "invariants": ["deployment predates incident"]
+}

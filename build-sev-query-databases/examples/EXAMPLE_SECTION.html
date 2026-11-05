@@ -1,0 +1,23 @@
+<hr>
+<h2>12. Example</h2>
+<p><strong>SEV ID: S707352</strong></p>
+<p>This is the first end-to-end example for the generic <code>build-sev-query-databases</code> skill. The SEV is test input only and is not embedded in the skill.</p>
+<h3>Test</h3>
+<p>Run <code>TEST-E2E-001</code>. Starting only from the SEV ID, discover the linked OpsMate experiments, custom trajectories, harnesses, cutoffs, database-query sources, and required time ranges. Do not supply or hardcode trajectory URLs.</p>
+<h3>Expected construction</h3>
+<ul>
+  <li>Normalize the discovered trajectory formats.</li>
+  <li>Select sufficient causal, directional, negative, and realistic misleading evidence while skipping documented duplicates.</li>
+  <li>Apply deterministic transformations that preserve joins, ordering, diagnostic signals, and the answer.</li>
+  <li>Build <code>scenario.sqlite</code>, a reconstructable <code>scenario.sql</code>, the replay service, Bash CLI, Python client, startup scripts, man pages, manifests, and private ToolReceipts.</li>
+</ul>
+<h3>Required validation</h3>
+<p>Test database reconstruction, replay startup, resource discovery, successful and negative CLI behavior, receipt creation, deterministic rebuilding, size limits, offline isolation, privacy, and independent solvability.</p>
+<h3>Artifacts to review</h3>
+<ul>
+  <li><code>private/build_report.md</code>: construction timings, evidence decisions, transformations, row and byte measurements, generated components, validation, failures, and gaps.</li>
+  <li><code>private/test_report.md</code>: exact test commands and pass/fail evidence.</li>
+  <li><code>private/private_authoring_manifest.json</code>: targeted queries, hidden evidence, classifications, provenance, exclusions, and coverage gaps.</li>
+  <li><code>scaffolding_summary.json</code>: agent-safe handoff summary.</li>
+</ul>
+<p>Populate this section with measured results after the run. Do not copy private report contents or benchmark conclusions into the task-solving environment.</p>

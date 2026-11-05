@@ -1,0 +1,25 @@
+{
+  "sev_id": "S_FIXTURE_001",
+  "tool": "logview",
+  "operation": "mid_trend",
+  "query_id": "incident_mid_trend",
+  "resource_name": "synthetic_crash_context",
+  "context": "synthetic_crash_context",
+  "query": "read occurrence trend for one MID",
+  "classification": "causal",
+  "classification_reason": "Preserves the onset and recovery shape.",
+  "time_range": {"baseline_start": 1782140400, "cutoff": 1782147600},
+  "supported_functions": ["trend", "filter_by_mid", "time_window"],
+  "privacy": {"values_approved": true, "included_keys": []},
+  "columns": [
+    {"name": "time", "type": "timestamp"},
+    {"name": "mid", "type": "string"},
+    {"name": "occurrences", "type": "integer"}
+  ],
+  "rows": [
+    {"time": 1782142200, "mid": "22222222222222222222222222222222", "occurrences": 2},
+    {"time": 1782145800, "mid": "22222222222222222222222222222222", "occurrences": 84},
+    {"time": 1782147000, "mid": "22222222222222222222222222222222", "occurrences": 3}
+  ],
+  "invariants": ["trend spikes during incident and recovers before cutoff"]
+}

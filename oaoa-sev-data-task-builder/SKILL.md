@@ -24,16 +24,18 @@ Read these completely before acting when their branch applies:
 
 1. **TERMINAL-BENCH REQUIRED PARENT SKILL:** `oaoa-sev-task-autopilot`, shipped
    alongside this skill at `../oaoa-sev-task-autopilot/SKILL.md`.
-2. **TERMINAL-BENCH CONDITIONAL COMPONENT:** `build-sev-query-databases`
-   (personal skill, installed separately under your skills dir, e.g.
-   `~/.llms/skills/build-sev-query-databases/SKILL.md`), including every
+2. **TERMINAL-BENCH CONDITIONAL COMPONENT:** `build-sev-query-databases`,
+   shipped in this repo at `./build-sev-query-databases/SKILL.md`, including every
    reference it requires for the current phase. Use it only when the frozen public
    contract genuinely requires query-database evidence.
 3. **TERMINAL-BENCH CONDITIONAL COMPONENT:** `ods-snapshot` from
-   `codimango/swe-bench-aai-labs-oaoa/tooling/ods-tool/authoring/SKILL.md`, including
+   `tooling/ods-tool/authoring/SKILL.md` in the `codimango/swe-bench-aai-labs-oaoa`
+   repo, including
    its referenced authoring, anonymization, data-model, and packaging docs. Use it only
    when the frozen public contract genuinely requires ODS counter or alert evidence.
-4. **SWE-BENCH REQUIRED PARENT SKILL:** `team-aai:swebench-flow` and its mandatory
+4. **SWE-BENCH REQUIRED PARENT SKILL:** `team-aai:swebench-flow`
+   (`fbcode/claude-templates/components/plugins/team-aai/skills/swebench-flow/SKILL.md`
+   in fbsource, or the installed `team-aai` plugin) and its mandatory
    review, provenance, contamination, calibration, and validation skills. Select the
    correct public, licensed, or Meta-internal repository workflow from that skill; do
    not mix their source-materialization rules.

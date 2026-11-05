@@ -1,0 +1,14 @@
+{
+  "trajectory_id": "fixture-muse-trajectory",
+  "harness": "MUSE",
+  "cutoff": "2026-10-20T12:30:00Z",
+  "events": [
+    {
+      "timestamp": "2026-10-20T12:10:00Z",
+      "tool_name": "scuba.query",
+      "operation": "aggregate",
+      "input": {"dataset": "service_requests", "group_by": "status"},
+      "status": "success"
+    }
+  ]
+}

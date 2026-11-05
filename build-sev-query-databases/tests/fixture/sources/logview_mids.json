@@ -1,0 +1,26 @@
+{
+  "sev_id": "S_FIXTURE_001",
+  "tool": "logview",
+  "operation": "mid_list",
+  "query_id": "incident_mids",
+  "resource_name": "synthetic_crash_context",
+  "context": "synthetic_crash_context",
+  "query": "list MIDs in the bounded incident window",
+  "classification": "supporting",
+  "classification_reason": "Preserves error-group movement without exposing the answer label.",
+  "time_range": {"baseline_start": 1782140400, "cutoff": 1782147600},
+  "supported_functions": ["list", "filter", "order_by_hits"],
+  "privacy": {"values_approved": true, "included_keys": []},
+  "columns": [
+    {"name": "time", "type": "timestamp"},
+    {"name": "mid", "type": "string"},
+    {"name": "title", "type": "string"},
+    {"name": "hits", "type": "integer"},
+    {"name": "delta", "type": "float"}
+  ],
+  "rows": [
+    {"time": 1782144000, "mid": "11111111111111111111111111111111", "title": "worker failure", "hits": 4, "delta": 0.1},
+    {"time": 1782145800, "mid": "22222222222222222222222222222222", "title": "request failure", "hits": 84, "delta": 7.2}
+  ],
+  "invariants": ["the incident MID rises above the baseline MID"]
+}
