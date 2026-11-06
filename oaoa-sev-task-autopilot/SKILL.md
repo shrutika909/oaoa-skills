@@ -137,9 +137,6 @@ Source locations (already out there — clone, do not copy into this repo):
 - `review-task-tbench-v2` from the `team-aai` plugin install; canonical sources live
   under `team-aai-dev` / `team-aai/quality` in fbsource, so confirm which revision
   your install carries before pushing.
-- UNRESOLVED: `k3-instruction-rewrite-loop` has no locatable source in fbsource or
-  the oaoa-tbench repo — resolve its location before relying on the provenance
-  rewrite gate on a fresh machine.
 
 SEV-only eligibility and metadata rules remain authoritative for `source_kind: sev`
 only. For `logview-health-incident`, inability to verify the accepted non-SEV origin
@@ -269,11 +266,14 @@ recorded provider and model ID exactly match the selected model. A run that reso
 an unselected/default model (including a generic Muse Spark default) is invalid even if
 the file looks correct.
 
-When cloud provenance reports Codex write-log overlap for `instruction.md`, the
-repository `k3-instruction-rewrite-loop` becomes mandatory. Use its historical-write
-extractor and n-gram checker, include every cloud `blocks[].text` span and available
-Codex-authored contract/output transcript in the overlap corpus, and have K3 independently
-reauthor the complete file. Codex must not patch even one character of the result. A
+When cloud provenance reports Codex write-log overlap for `instruction.md`, a K3
+clean-room rewrite is mandatory (no repository helper exists — run it manually):
+build the overlap corpus from every cloud `blocks[].text` span plus all available
+Codex-authored contract/output transcripts, compare against the candidate file with
+literal matching plus case/punctuation-normalized n-gram comparison (flag any
+non-literal overlap beyond unavoidable public literals), and have K3 independently
+reauthor the complete file from the frozen requirements brief without seeing the
+flagged text. Codex must not patch even one character of the result. A
 Meta-owned session receipt does not override an L3 `agentWrites: CONTAMINATED` verdict.
 
 ## Build and validation loop
@@ -422,7 +422,7 @@ Immediately before push, mechanically assert all of the following in `run_state.
 - the repair queue and reviewer-feedback ledger contain zero `OPEN` rows.
 - `instruction.md` has an explicit approved model/provider/session receipt whose exported
   session identity matches the launch command; no default model was used;
-- the repository historical-write and n-gram overlap preflight has zero non-literal
+- the manual historical-write and n-gram overlap preflight has zero non-literal
   Codex overlaps, including every span from the latest cloud L3 provenance evidence;
 - local provenance/stylometry returned meaningful terminal evidence. Record clearly
   that local provenance cannot waive cloud L3 and that readiness still requires the
@@ -433,7 +433,8 @@ authorization to weaken or skip it.
 
 Never push first merely to discover whether provenance passes when the local historical
 write/overlap audit was skipped. If the current task already has a cloud provenance
-failure, add it to the repair queue and complete the K3 rewrite loop before another
+failure, add it to the repair queue and complete the K3 clean-room rewrite
+described in "Approved-model instruction authorship" before another
 candidate push. After push, inspect provenance for that exact SHA before describing any
 other pending validation as the only blocker. `agentWrites: CONTAMINATED` means the task
 is not ready regardless of classifier, stylometry, Oracle, or structural results.

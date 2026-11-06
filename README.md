@@ -54,10 +54,12 @@ Keep the three folders as siblings — `oaoa-sev-data-task-builder` references
 - `team-oaoa` plugin → `sev-to-tbench-task` (canonical source in fbsource at
   `fbcode/claude-templates/components/plugins/team-oaoa/skills/`).
 
-**Unresolved — locate before relying on a fresh machine:**
-- `k3-instruction-rewrite-loop` — referenced by the autopilot provenance gate but
-  found in neither fbsource nor the oaoa-tbench repo. Resolve its source before
-  trusting the clean-room rewrite gate elsewhere.
+**Dropped, replaced with inline procedure:**
+- `k3-instruction-rewrite-loop` existed nowhere as a named artifact (only its name
+  appeared in the skill). All three references now describe the manual K3 clean-room
+  rewrite inline: overlap corpus from cloud `blocks[].text` spans + Codex-authored
+  transcripts, literal + normalized n-gram comparison, K3 reauthors blind from the
+  frozen brief, Codex patches nothing.
 
 **Live systems (need access + identity, not bundlable):**
 OAOA candidate registry + candidate sheet + cross-author registry, Knots

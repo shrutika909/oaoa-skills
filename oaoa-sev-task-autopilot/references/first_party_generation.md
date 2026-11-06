@@ -159,5 +159,9 @@ overlap checker for every first-party-required path. Seed the corpus with all av
 local writes, coordinator output, requirements summaries, and every span reported by
 the latest cloud L3 provenance evidence. Only unavoidable public literals may remain.
 If cloud reports `agentWrites: CONTAMINATED`, an otherwise valid Meta/K3 receipt is not
-enough: use the repository K3 clean-room rewrite loop and obtain a new exact-SHA cloud
+enough: run a manual K3 clean-room rewrite (build the overlap corpus from every cloud
+`blocks[].text` span plus all available Codex-authored transcripts, flag non-literal
+overlap with literal matching plus case/punctuation-normalized n-gram comparison,
+have K3 independently reauthor the complete file from the frozen requirements brief
+without seeing the flagged text) and obtain a new exact-SHA cloud
 provenance result. Local stylometry cannot waive cloud write-log evidence.
