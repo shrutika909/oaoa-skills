@@ -51,6 +51,10 @@ Read completely before acting:
 4. **REQUIRED EXPORT CONTRACT:**
    `tooling/build-sev-query-databases/references/anonymization-contract.md` and, when
    LogView evidence is materialized, `references/logview-contract.md`.
+5. **REQUIRED LOG ANONYMIZATION GUIDE:**
+   [Anonymizing logs for a Cyber Bench task](https://docs.google.com/document/d/1MrQRKafyDLVpDIHU7c4q1WfIM7EB6hvSne3wzFy-d_k/edit?tab=t.0#heading=h.q3pmxopxs8nn).
+   Its `log_anon` procedure is mandatory whenever log-shaped source data is staged or a
+   log-derived fixture is produced. It augments, and never replaces, fictional reconstruction.
 
 ## Invocation
 
@@ -79,6 +83,18 @@ worker and `[review] auto_submit` before source research.
 
 Do not create a card unless the user's authority covers every later action a shared
 worker can take, or an observed task-scoped hold prevents those actions.
+
+Preflight has two separate effects:
+
+- Missing board binding, board synchronization, or safe worker policy blocks only Harvester
+  card intake and shared-worker execution. It does **not** block authorized author-private
+  experiment export, source resolution, evidence acquisition, fictional reconstruction, or
+  creation of a validated local brief.
+- Missing source access, inaccessible dedupe coverage, a known duplicate, or an unsafe data
+  classification blocks source work at the corresponding fail-closed gate.
+
+When the board is unavailable but the private-source gates pass, continue through Step 7 and
+stop at `LOCAL_BRIEF_ONLY`. Never describe the private queue request itself as the idea or card.
 
 ### 2. Resolve and freeze one source
 
@@ -156,6 +172,20 @@ zero and never a model failure. OpsMate output is an arm result, not causal gold
 
 Keep raw exports, trajectories, scores, URLs, IDs, hashes, and source mappings author-only.
 
+Use the `oaoa-sev-task-autopilot` Health Incident evidence method to derive the task idea from
+the complete comparison, not from the incident title or final score alone. Privately identify:
+
+- which pre-cutoff evidence the Muse arm observed, missed, or misinterpreted;
+- the exact reasoning branch, tool failure, retry, or incomplete retrieval associated with the
+  outcome;
+- which competing explanation remained plausible and which reachable evidence falsifies it;
+- which recovery action and observable final state are supported by reviewed causal gold.
+
+Muse behavior is design evidence, not the answer key. A failed or lower-scoring Muse arm is not
+proof of the root cause; an incomplete, leaked, expired, or unmapped arm remains `UNSCORABLE`.
+Record the private failure analysis and its trajectory/score hashes before designing the
+fictional task.
+
 Fixture success is never live acquisition proof. Each adapter invocation must record the
 exact supported command, deployed tool revision, request parameters or their private hash,
 source revision/cutoff, response hash, completeness fields, timestamp, and exit status.
@@ -175,6 +205,30 @@ Do not send raw trajectories or production extracts to an LLM. Privately abstrac
 Production-derived task data must be regenerated from a fictional specification. Simple
 renaming or deterministic pseudonymization is not an export control. Require independent
 PASS results for identity safety, confidentiality safety, and technical fidelity.
+
+Apply the required `log_anon` guide as a second, mechanical defense whenever log-shaped data is
+materialized:
+
+1. Independently confirm the input is non-DSS4. The CLI heuristic is not sufficient, and
+   `--acknowledge-dss4-risk` requires a recorded independent classification decision.
+2. Never anonymize in place. Use a fresh output directory for every run so salts and leftovers
+   cannot mix.
+3. Run a cheap dry run first, then the final pass with secret scanning enabled. `--no-priner` is
+   allowed only while the documented use case is unavailable; `--no-secret-scan` is not valid
+   for a release candidate.
+4. Preserve the command, tool revision, input-tree hash, output-tree hash, report hash, stage
+   availability, exit status, and per-label counts in the private acquisition chain. Never
+   persist the salt, alias map, raw values, or aliases in the report.
+5. Require zero matches for selected known cleartext canaries, equal expected/materialized file
+   counts, no skipped non-UTF8 or failed files, and review of the value-free JSONL report.
+6. Treat bare usernames, Windows SIDs, `DOMAIN\\user`, user-profile paths, filenames, directory
+   names, and non-Latin names as known coverage gaps requiring an additional guard or rejection.
+7. Never permit credential verification against real providers. A scanner configuration that
+   performs network verification is a hard stop.
+
+`log_anon` output derived from production logs remains author-private unless the fictionalization
+and export contracts independently permit it. Format-preserving pseudonyms are not permission to
+ship production-derived records.
 
 When LogView is part of the public task, preserve only approved operation semantics and
 MID→sample→thread relationships through fictional resources. Never export real context,
