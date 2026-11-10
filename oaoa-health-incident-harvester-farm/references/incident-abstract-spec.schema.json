@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "oaoa.health-incident-abstract-spec.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "source_kind",
+    "selection_mode",
+    "source_binding_sha256",
+    "incident_status",
+    "cutoff",
+    "causal_gold_verified",
+    "release_gates",
+    "evidence",
+    "alternatives"
+  ],
+  "properties": {
+    "schema": {"const": "oaoa.health-incident-abstract-spec.v1"},
+    "source_kind": {"const": "logview-health-incident"},
+    "selection_mode": {"enum": ["named-t", "authorized-experiment"]},
+    "source_binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "incident_status": {"enum": ["closed", "resolved"]},
+    "cutoff": {"type": "integer", "minimum": 1},
+    "causal_gold_verified": {"const": true},
+    "release_gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity_safety", "confidentiality_safety", "technical_fidelity"],
+      "properties": {
+        "identity_safety": {"const": "PASS"},
+        "confidentiality_safety": {"const": "PASS"},
+        "technical_fidelity": {"const": "PASS"}
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "source_family", "summary", "available_at"],
+        "properties": {
+          "id": {"type": "string"},
+          "kind": {"type": "string"},
+          "source_family": {"type": "string"},
+          "summary": {"type": "string"},
+          "available_at": {"type": "integer"}
+        }
+      }
+    },
+    "alternatives": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "reason", "source_families", "killing_evidence_ids"],
+        "properties": {
+          "name": {"type": "string", "pattern": "^[a-z][a-z0-9_-]{1,79}$"},
+          "reason": {"type": "string"},
+          "source_families": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "killing_evidence_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}
