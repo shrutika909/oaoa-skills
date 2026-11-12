@@ -190,27 +190,6 @@ instruction authorship. It does not weaken the repository skill's gates.
    target Avocado, pad prose, hide required evidence, add arbitrary waiting, or ask a
    model to become confused.
 
-## Additional SEV evidence filter and reusable selection
-
-**REQUIRED SUB-SKILL for SEV selection:** Load the complete
-`tooling/sev-evidence-pack-v2/SKILL.md` from
-`codimango/swe-bench-aai-labs-oaoa` (installed as `sev-evidence-pack-v2`).
-Read [references/sev_evidence_selection.md](references/sev_evidence_selection.md)
-completely before selecting or resuming source discovery. Apply its closed-SEV,
-root-cause, stored generated OpsMate gold and verified risk filter in addition
-to the existing source-key and semantic dedupe gates.
-
-Local and scheduled invocations share a durable private `OAOA_SELECTION_DIR`.
-Retain the bounded eligible set, discovery receipt/hash, registry exclusions and
-per-source outcomes. Load these first on resume; use the saved pool with fresh
-registry/current eligibility checks and skip already handled sources. Persist
-attempt/rejection outcomes through `scripts/selection_state.py`. Resume an owned
-attempt by identity. Reuse matching validated evidence bundles rather than
-recollecting them. A discovery set is not a task-ready or exhaustive census.
-
-For `source_kind: logview-health-incident`, record
-`NOT_APPLICABLE_SOURCE_KIND` and use the existing Logview-specific gates.
-
 ## End-to-end execution authority
 
 An invocation that uses `/goal` and requires an exact pushed SHA at

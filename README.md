@@ -42,10 +42,6 @@ Autopilot and data-task-builder source/evidence contracts, and `oaoa-sev-data-ta
   schemas; fixtures reference example SEV S707352 only.
 
 **Already out there — clone/install, do not copy:**
-- `codimango/swe-bench-aai-labs-oaoa` repo →
-  `tooling/sev-evidence-pack-v2/` — complete additional SEV eligibility filter
-  and evidence-world tool. Install the directory as `sev-evidence-pack-v2`;
-  local/scheduled autopilot runs retain candidate/skip state outside repositories.
 - `codimango/oaoa-tbench` repo → `.agents/skills/sev-investigation-task/SKILL.md`
   and `.agents/skills/sev-to-codimango-task/SKILL.md` (+ its `references/` and
   `scripts/`) — required foundations for the autopilot.
