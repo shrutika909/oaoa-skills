@@ -21,6 +21,12 @@ false. Unknown risk or denied/missing gold is unresolved, not a pass. Keep the
 privacy/security exclusion enabled unless the user explicitly widens selection.
 Oncall include/exclude flags narrow the authorized pool; they never replace these gates.
 
+Check the installed upstream revision's contract before upgrading. Some 2.4
+integration revisions perform private acquisition with
+`risk_screening.status=not_performed` and allow low-confidence gold. Retain those
+sources as `pending_eligibility_sevs`; neither behavior satisfies this autopilot's
+eligibility gate. Missing risk information cannot establish a safe source.
+
 ## Find and retain a bounded set
 
 Before discovery, load saved outcomes and refresh used/reserved source keys from
@@ -36,6 +42,20 @@ the tool's bounded `--days` discovery without `--candidate-file`.
 
 ```bash
 umask 077
+python3 -I "$AUTOPILOT_SKILL_ROOT/scripts/selection_state.py" \
+  --state-dir "$OAOA_SELECTION_DIR" check-access
+```
+
+Exit 3 means a recorded source-access block: stop discovery before invoking the
+component. Keep `selection_status.json` and the full denial privately. Clear that
+block only after a supported access/classification route actually changes and a
+bounded read proves it. A new session, model, date or `AUTONOMOUS/READ` command
+annotation does not establish changed asset access. A policy error is not a
+reason to fan out over the saved corpus or omit risk checks.
+
+After this check succeeds, run:
+
+```bash
 python3 -I "$EVIDENCE_SKILL_ROOT/scripts/sev_evidence_pack.py" \
   --candidate-file "$OAOA_SELECTION_DIR/authorized_candidates.json" \
   --skip-file "$OAOA_SELECTION_DIR/exclusions.json" \
@@ -49,8 +69,9 @@ python3 -I "$AUTOPILOT_SKILL_ROOT/scripts/selection_state.py" \
 
 The helper retains the discovery receipt, its hash, a tool-readable
 `candidates.json`, and cumulative outcomes. `eligible_sevs` contains verified
-selections; `retryable_sevs` retains per-source verification failures. Their union
-is the revalidation pool, never automatic eligibility. Discovery exit 2 with no
+selections; `retryable_sevs` retains per-source verification failures;
+`pending_eligibility_sevs` retains incomplete classification or causal evidence.
+Their union is the revalidation pool, never automatic eligibility. Discovery exit 2 with no
 selected rows and no verification failures means an empty set; save it and stop
 selection. With verification failures, retry the same retained sources before
 declaring the pool exhausted. A command failure must not replace a previous valid
@@ -100,3 +121,11 @@ items. Discovery-only mode builds no world and launches no Muse scouts.
 
 For `logview-health-incident`, record `NOT_APPLICABLE_SOURCE_KIND` and retain its
 existing source-aware filtering. Never invent a SEV to call this dependency.
+
+## Push destination check
+
+Before any authorized push, record the destination and dry-run the fully
+qualified refspec `<expected-full-SHA>:refs/heads/<authorized-branch>`. Confirm
+the output names only that destination before using the same refspec for the
+real push. A source-only branch argument can map to its upstream branch under
+`push.default=upstream`, including `main` after branching from `origin/main`.

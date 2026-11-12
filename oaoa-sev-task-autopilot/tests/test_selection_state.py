@@ -29,7 +29,10 @@ class SelectionStateTest(unittest.TestCase):
         receipt.write_text(json.dumps({
             'schema': 'oaoa.sev-discovery.v1',
             'generated_at': '2026-11-11T20:00:00+00:00',
-            'selected': [{'sev': sev} for sev in sevs],
+            'selected': [{'sev': sev, 'generated_revision_count': 1, 'risk': {
+                'verified': True, 'visibility': 'public', 'is_privacy': False,
+                'is_security': False, 'is_privacy_safeguard': False,
+            }} for sev in sevs],
             'complete': False,
             'verification_failure_count': 0,
         }))
@@ -43,6 +46,7 @@ class SelectionStateTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         candidates = self.load('candidates.json')
         self.assertEqual(candidates['sevs'], ['S123456', 'S123457'])
+        self.assertEqual(candidates['eligible_sevs'], ['S123456', 'S123457'])
         self.assertFalse(candidates['discovery_complete'])
         self.assertEqual(candidates['verification_failure_count'], 0)
         self.assertEqual((self.state / 'candidates.json').stat().st_mode & 0o777, 0o600)
@@ -97,6 +101,44 @@ class SelectionStateTest(unittest.TestCase):
         result = self.save(['logview:context:mid'])
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.load('candidates.json')['sevs'], ['S123456'])
+
+    def test_global_identity_error_does_not_erase_prior_pool(self):
+        self.assertEqual(self.save(['S123456']).returncode, 0)
+        receipt = self.root / 'blocked.json'
+        receipt.write_text(json.dumps({
+            'schema': 'oaoa.sev-discovery.v1',
+            'generated_at': '2026-11-12T20:00:00+00:00',
+            'selected': [], 'verification_failure_count': 0,
+            'verification_error': {'error': 'agent_role_denied', 'failure_scope': 'caller_identity'},
+        }))
+        result = self.run_command('save-discovery', '--receipt', str(receipt))
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.load('candidates.json')['sevs'], ['S123456'])
+        self.assertEqual(self.run_command('check-access').returncode, 3)
+
+    def test_unscreened_private_acquisition_is_pending_not_eligible(self):
+        receipt = self.root / 'private.json'
+        receipt.write_text(json.dumps({
+            'schema': 'oaoa.sev-discovery.v1',
+            'generated_at': '2026-11-12T20:00:00+00:00',
+            'selected': [{'sev': 'S123456', 'generated_revision_count': 1}],
+            'verification_failure_count': 0,
+            'risk_screening': {'status': 'not_performed'},
+        }))
+        result = self.run_command('save-discovery', '--receipt', str(receipt))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.load('candidates.json')['eligible_sevs'], [])
+        self.assertEqual(self.load('candidates.json')['pending_eligibility_sevs'], ['S123456'])
+        self.assertEqual(self.load('candidates.json')['sevs'], ['S123456'])
+
+    def test_known_access_denial_blocks_automatic_discovery(self):
+        self.state.mkdir(mode=0o700)
+        (self.state / 'selection_status.json').write_text(json.dumps({
+            'status': 'BLOCKED_SOURCE_ACCESS', 'reason': 'agent_role_denied',
+        }))
+        result = self.run_command('check-access')
+        self.assertEqual(result.returncode, 3, result.stderr)
+        self.assertEqual(json.loads(result.stdout)['status'], 'BLOCKED_SOURCE_ACCESS')
 
     def test_parallel_updates_do_not_lose_outcomes(self):
         commands = [[sys.executable, str(SCRIPT), '--state-dir', str(self.state), 'record', sev,

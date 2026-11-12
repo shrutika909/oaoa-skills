@@ -512,6 +512,11 @@ remote finding may justify another candidate, but diagnose it first and repeat t
 local review/sandbox/author-matrix gate before another push. Never use serial pushes as
 the debugging loop.
 
+Before any push, dry-run the fully qualified `<expected-full-SHA>:refs/heads/<authorized-branch>`
+refspec and confirm that only the recorded destination will change. Use that same
+refspec for the real push; a source-only branch can map to its upstream under
+`push.default=upstream`.
+
 Before pushing, resolve and record the repository's ingestion branch and how Codimango
 discovers task updates. A push to a feature branch is not delivery when Codimango reads
 the default branch. Do not report “pushed,” “synced,” or “ready” merely because

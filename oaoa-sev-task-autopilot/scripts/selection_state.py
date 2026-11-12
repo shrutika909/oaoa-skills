@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import re
+import sys
 import tempfile
 
 
@@ -36,10 +37,20 @@ def write_json(path, value):
             os.unlink(temp)
 
 
+def private_state(state):
+    if any((parent / marker).exists() for parent in (state, *state.parents)
+           for marker in ('.git', '.hg', '.sl')):
+        raise ValueError('selection state must be outside repositories')
+    state.mkdir(mode=0o700, parents=True, exist_ok=True)
+    if state.stat().st_mode & 0o077:
+        raise ValueError('selection directory must have private permissions')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--state-dir', required=True)
     commands = parser.add_subparsers(dest='command', required=True)
+    commands.add_parser('check-access')
     save = commands.add_parser('save-discovery')
     save.add_argument('--receipt', required=True)
     record = commands.add_parser('record')
@@ -49,6 +60,13 @@ def main():
     record.add_argument('--evidence', help='Private path to the outcome receipt')
     args = parser.parse_args()
     os.umask(0o077)
+    state = Path(args.state_dir).expanduser().resolve()
+    if args.command == 'check-access':
+        status_path = state / 'selection_status.json'
+        status = json.loads(status_path.read_text()) if status_path.exists() else {}
+        blocked = status.get('status') == 'BLOCKED_SOURCE_ACCESS'
+        print(json.dumps({'status': 'BLOCKED_SOURCE_ACCESS' if blocked else 'NO_RECORDED_ACCESS_BLOCK'}))
+        return 3 if blocked else 0
 
     # Validate inputs before replacing the last successful discovery.
     if args.command == 'save-discovery':
@@ -56,6 +74,20 @@ def main():
         receipt = json.loads(raw)
         if receipt.get('schema') != 'oaoa.sev-discovery.v1' or not isinstance(receipt.get('selected'), list):
             raise ValueError('expected an evidence-pack discovery receipt')
+        error = receipt.get('verification_error')
+        if isinstance(error, dict) and error.get('error') in ('agent_role_denied', 'permission_denied'):
+            private_state(state)
+            with (state / '.lock').open('a') as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX)
+                write_json(state / 'selection_status.json', {
+                    'status': 'BLOCKED_SOURCE_ACCESS', 'reason': error['error'],
+                    'receipt': str(Path(args.receipt).resolve()),
+                    'receipt_sha256': hashlib.sha256(raw).hexdigest(),
+                })
+            print(json.dumps({'status': 'BLOCKED_SOURCE_ACCESS'}))
+            return 3
+        if error:
+            raise ValueError('discovery verification is blocked; retain the previous pool')
         generated_at = receipt['generated_at']
         if datetime.fromisoformat(generated_at).tzinfo is None:
             raise ValueError('discovery timestamp requires a timezone')
@@ -64,9 +96,24 @@ def main():
         if receipt.get('verification_failure_count', 0) != len(failures):
             raise ValueError('verification failures require per-source retry receipts')
         retryable_sevs = sorted({canonical_sev(row['sev']) for row in failures})
+        eligible = set()
+        screening = (receipt.get('risk_screening') or {}).get('status')
+        for row in receipt['selected']:
+            risk = row.get('risk') or {}
+            safe = (
+                risk.get('verified') is True and risk.get('visibility') == 'public'
+                and all(risk.get(flag) is False for flag in ('is_privacy', 'is_security', 'is_privacy_safeguard'))
+                and row.get('generated_revision_count', 0) > 0
+                and row.get('sev_root_cause_present', True) is True
+                and row.get('stored_root_cause_present', True) is True
+                and screening != 'not_performed'
+            )
+            if safe:
+                eligible.add(canonical_sev(row['sev']))
         candidates = {
             'source_kind': 'sev', 'sevs': sorted(set(sevs + retryable_sevs)),
-            'eligible_sevs': sevs, 'retryable_sevs': retryable_sevs,
+            'eligible_sevs': sorted(eligible), 'retryable_sevs': retryable_sevs,
+            'pending_eligibility_sevs': sorted(set(sevs) - eligible),
             'discovery_generated_at': generated_at,
             'discovery_complete': receipt.get('complete'),
             'verification_failure_count': receipt.get('verification_failure_count'),
@@ -75,13 +122,7 @@ def main():
     else:
         sev = canonical_sev(args.sev)
 
-    state = Path(args.state_dir).expanduser().resolve()
-    if any((parent / marker).exists() for parent in (state, *state.parents)
-           for marker in ('.git', '.hg', '.sl')):
-        raise ValueError('selection state must be outside repositories')
-    state.mkdir(mode=0o700, parents=True, exist_ok=True)
-    if state.stat().st_mode & 0o077:
-        raise ValueError('selection directory must have private permissions')
+    private_state(state)
     with (state / '.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         outcomes_path = state / 'outcomes.json'
@@ -111,4 +152,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
