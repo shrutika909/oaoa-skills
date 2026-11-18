@@ -10,6 +10,7 @@ skills directory — no OD-specific paths.
 | `oaoa-health-incident-harvester-farm` | Selecting one eligible closed Health Incident from a named task or authorized OpsMate experiment, deriving a source-safe Terminal-Bench idea from complete baseline/Muse evidence, and handing only the validated fictional brief to Harvester. |
 | `oaoa-sev-data-task-builder` | Creating one OAOA Terminal-Bench or SWE-Bench task from a named mitigated SEV, a Logview Health Incident task, or an authorized OpsMate experiment. Requires `benchmark=tbench\|swebench` + exactly one source. |
 | `oaoa-sev-task-autopilot` | Developing / repairing an OAOA Terminal-Bench RCA task end-to-end until its exact SHA is `READY_FOR_HUMAN_SUBMISSION` (`new`, `develop-draft`, or `repair-existing` modes). |
+| `oaoa-sev-task-autopilot-shru` | Shrutika-named Autopilot entrypoint, with the same workflow and references. |
 | `build-sev-query-databases` | **Bundled local-only dependency.** Builds the bounded offline query-database component (Scuba/Hive/Daiquery/Presto/LogView → SQLite replay). Invoked by the data-task-builder tbench branch when the frozen contract requires query-DB evidence. |
 
 ## Install
@@ -18,10 +19,10 @@ Copy the skill folders into your skills directory:
 
 ```bash
 # Codex
-cp -r oaoa-health-incident-harvester-farm oaoa-sev-task-autopilot oaoa-sev-data-task-builder build-sev-query-databases ~/.codex/skills/
+cp -r oaoa-health-incident-harvester-farm oaoa-sev-task-autopilot oaoa-sev-task-autopilot-shru oaoa-sev-data-task-builder build-sev-query-databases ~/.codex/skills/
 
 # Claude Code
-cp -r oaoa-health-incident-harvester-farm oaoa-sev-task-autopilot oaoa-sev-data-task-builder build-sev-query-databases ~/.claude/skills/
+cp -r oaoa-health-incident-harvester-farm oaoa-sev-task-autopilot oaoa-sev-task-autopilot-shru oaoa-sev-data-task-builder build-sev-query-databases ~/.claude/skills/
 ```
 
 Keep the four folders as siblings — the Health Incident Harvester requires the
