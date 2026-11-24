@@ -190,6 +190,27 @@ instruction authorship. It does not weaken the repository skill's gates.
    target Avocado, pad prose, hide required evidence, add arbitrary waiting, or ask a
    model to become confused.
 
+## Additional SEV evidence filter and reusable selection
+
+**REQUIRED SUB-SKILL for SEV selection:** Load the complete
+`tooling/sev-evidence-pack-v2/SKILL.md` from
+`codimango/swe-bench-aai-labs-oaoa` (installed as `sev-evidence-pack-v2`).
+Read [references/sev_evidence_selection.md](references/sev_evidence_selection.md)
+completely before selecting or resuming source discovery. Apply its closed-SEV,
+root-cause, stored generated OpsMate gold and verified risk filter in addition
+to the existing source-key and semantic dedupe gates.
+
+Local and scheduled invocations share a durable private `OAOA_SELECTION_DIR`.
+Retain the bounded eligible set, discovery receipt/hash, registry exclusions and
+per-source outcomes. Load these first on resume; use the saved pool with fresh
+registry/current eligibility checks and skip already handled sources. Persist
+attempt/rejection outcomes through `scripts/selection_state.py`. Resume an owned
+attempt by identity. Reuse matching validated evidence bundles rather than
+recollecting them. A discovery set is not a task-ready or exhaustive census.
+
+For `source_kind: logview-health-incident`, record
+`NOT_APPLICABLE_SOURCE_KIND` and use the existing Logview-specific gates.
+
 ## End-to-end execution authority
 
 An invocation that uses `/goal` and requires an exact pushed SHA at
@@ -490,6 +511,11 @@ package manifest/hash and freeze those bytes. Commit and push that candidate onc
 remote finding may justify another candidate, but diagnose it first and repeat the full
 local review/sandbox/author-matrix gate before another push. Never use serial pushes as
 the debugging loop.
+
+Before any push, dry-run the fully qualified `<expected-full-SHA>:refs/heads/<authorized-branch>`
+refspec and confirm that only the recorded destination will change. Use that same
+refspec for the real push; a source-only branch can map to its upstream under
+`push.default=upstream`.
 
 Before pushing, resolve and record the repository's ingestion branch and how Codimango
 discovers task updates. A push to a feature branch is not delivery when Codimango reads
